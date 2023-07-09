@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+{{ template "header.html" }}
+
+<body>
+  <div class="weui-msg">
+    <div class="weui-msg__icon-area"><i class="weui-icon-warn weui-icon_msg"></i></div>
+    <div class="weui-msg__text-area">
+      <h2 class="weui-msg__title">故障中</h2>
+      <p class="weui-msg__desc">
+        抱歉，由于服务器故障，我们暂时无法为您提供服务。
+      </p>
+    </div>
+    <div class="weui-msg__opr-area">
+      <p class="weui-btn-area">
+        <a href="mailto:customer-support@natwin.com" role="button" class="weui-btn weui-btn_default">联系客服</a>
+      </p>
+    </div>
+    <div class="weui-msg__extra-area">
+      {{ template "footer.html" }}
+    </div>
+  </div>
+</body>
+
+</html>

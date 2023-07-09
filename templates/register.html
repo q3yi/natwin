@@ -1,25 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register your product</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-    <script src="/static/mithril.min.js"></script>
-    <script>
-      var root = document.body
-      var productID = {{ .ID }}
-      m.mount(root, {
-	  view: function() {
-              return m("div", {class: "container"},
-		       m("h1", "Try me out: " + productID ),
-		       m("form", "")
-		      )
-	  }
-      })
-    </script>
+{{ template "header.html" }}
+
+<body>
+  <div class="weui-form">
+    <div class="weui-form__text-area">
+      <h2 class="weui-form__title"> NATWIN 产品注册 </h2>
+      <div class="weui-form__desc">
+        感谢选择 NATWIN 系列产品，请输入以下信息以完成产品注册。完成注册可以帮助我们更好的为您服务。
+      </div>
+    </div>
+    <form action="/registry" method="post">
+      <div class="weui-form__control-area">
+        <div class="weui-cells__group weui-cells__group_form">
+          <div class="weui-cells__title">产品信息</div>
+          <div class="weui-cells">
+            <label for="product_id" class="weui-cell weui-cell_active weui-cell_readonly">
+              <div class="weui-cell__hd"><span class="weui-label">序列号</span></div>
+              <div class="weui-cell__bd">
+                <input id="product_id" name="product_id" class="weui-input" placeholder="" value="{{ .ID }}" readonly />
+              </div>
+            </label>
+            <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
+              <div class="weui-cell__hd"><span class="weui-label">类型</span></div>
+              <div class="weui-cell__bd">
+                <input id="product_type" name="product_type" class="weui-input" placeholder="" value="车架" disabled />
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="weui-cells__group weui-cells__group_form">
+          <div class="weui-cells__title">用户信息</div>
+          <div class="weui-cells">
+            <label for="surname" class="weui-cell weui-cell_active">
+              <div class="weui-cell__hd"><span class="weui-label">姓</span></div>
+              <div class="weui-cell__bd">
+                <input id="surname" name="surname" class="weui-input" placeholder="姓氏" requried/>
+              </div>
+            </label>
+            <label for="forename" class="weui-cell weui-cell_active">
+              <div class="weui-cell__hd"><span class="weui-label">名</span></div>
+              <div class="weui-cell__bd">
+                <input id="forename" name="forname" class="weui-input" placeholder="名字（可选）" value="" />
+              </div>
+            </label>
+            <label for="gender" class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after">
+              <div class="weui-cell__hd">
+                <span class="weui-label">称呼</span>
+              </div>
+              <div class="weui-cell__bd">
+                <select class="weui-select" name="gender" id="gender" value="male">
+                  <option value="male">先生</option>
+                  <option value="female">女士</option>
+                </select>
+              </div>
+            </label>
+            <label for="phone" class="weui-cell weui-cell_active weui-cell_wrap">
+              <div class="weui-cell__hd"><label for="phone" class="weui-label">手机号</label></div>
+              <div class="weui-cell__bd">
+                <span class="weui-cell__control">+86</span>
+                <input id="phone" name="phone" class="weui-input weui-cell__control weui-cell__control_flex" type="number"
+                  pattern="[0-9]*" placeholder="请输入手机号" value="" />
+              </div>
+            </label>
+            <label for="email" class="weui-cell weui-cell_active">
+              <div class="weui-cell__hd"><span class="weui-label">邮箱</span></div>
+              <div class="weui-cell__bd">
+                <input id="email" name="email" class="weui-input" placeholder="请输入邮箱" />
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="weui-cells__group weui-cells__group_form">
+          <div class="weui-cells__title">购买信息</div>
+          <div class="weui-cells">
+            <div class="weui-cell weui-cell_active weui-cell_select" role="button" aria-haspopup="listbox"
+              id="purchase_date_picker">
+              <div class="weui-cell__hd">
+                <label class="weui-select">购买日期</label>
+              </div>
+              <div class="weui-cell__bd">
+                <input id="purchase_date" name="purchase_date" type="hidden" value="" />
+                <span id="purchase_date_view" class="weui-select">2023-07-09</span>
+              </div>
+            </div>
+            <div class="weui-cell weui-cell_active weui-cell_select" role="button" aria-haspopup="listbox"
+              id="buy_from_picker">
+              <div class="weui-cell__hd">
+                <div class="weui-select">购买渠道</div>
+              </div>
+              <div class="weui-cell__bd">
+                <input id="buy_from" name="buy_from" type="hidden" value="" />
+                <span id="buy_from_view" class="weui-select"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weui-form__ft">
+        <div class="weui-form__tips-area">
+          <label id="weuiAgree" for="agreement_checkbox" class="weui-agree weui-wa-hotarea">
+            <input id="agreement_checkbox" type="checkbox" class="weui-agree__checkbox" /><span
+              class="weui-agree__text">阅读并同意<a id="show_agreement" href="#">《服务条款》</a>
+            </span>
+          </label>
+        </div>
+        <div class="weui-form__opr-area">
+          <input  type="submit" id="submit_action" style="display:none"/>
+          <button class="weui-btn weui-btn_primary" id="submit_button">注册</button>
+        </div>
+      </div>
+    </form>
+    <div class="weui-form__extra-area">
+      {{ template "footer.html" }}
+    </div>
+  </div>
+  <div id="dialogs">
+    <div id="agreement_dialog_wrap" class="js_dialog_wrap" ref="showDialog2" aria-labelledby="js_title2" role="dialog"
+      aria-modal="false" aria-hidden="true" style="display: none;">
+      <div id="mask2" class="js_close weui-mask"></div>
+      <div id="argeement_dialog" class="js_dialog weui-half-screen-dialog weui-half-screen-dialog_large weui-bottom-fixed-opr-page">
+        <div class="weui-half-screen-dialog__hd">
+          <div class="weui-half-screen-dialog__hd__side">
+            <button class="js_close weui-btn_icon weui-wa-hotarea">关闭<i class="weui-icon-slide-down"></i></button>
+            <button style="display: none;" class="weui-btn_icon weui-wa-hotarea">返回<i
+                class="weui-icon-back-arrow-thin"></i></button>
+            <button style="display: none;" class="js_close weui-btn_icon weui-wa-hotarea">关闭<i
+                class="weui-icon-close-thin"></i></button>
+          </div>
+          <div class="weui-half-screen-dialog__hd__main">
+            <strong class="weui-half-screen-dialog__title" id="js_title2">服务条款</strong>
+          </div>
+        </div>
+        <div class="weui-half-screen-dialog__bd weui-bottom-fixed-opr-page__content" id="js_wrap_content">
+          <p class="weui-half-screen-dialog__desc">
+            辅助描述内容，可根据实际需要安排
+          </p>
+          <p class="weui-half-screen-dialog__tips" role="option">
+            辅助提示内容，可根据实际需要安排
+            Dolor adipisci quidem consequuntur similique consequuntur doloribus modi possimus sunt voluptas qui
+            Aspernatur natus error quisquam quidem ipsa corrupti! Dignissimos quasi quis natus fugiat odio in? Mollitia
+            molestias error earum.
+            <br>
+            Dolor adipisci quidem consequuntur similique consequuntur doloribus modi possimus sunt voluptas qui
+            Aspernatur natus error quisquam quidem ipsa corrupti! Dignissimos quasi quis natus fugiat odio in? Mollitia
+            molestias error earum.
+            <br>
+            Dolor adipisci quidem consequuntur similique consequuntur doloribus modi possimus sunt voluptas qui
+            Aspernatur natus error quisquam quidem ipsa corrupti! Dignissimos quasi quis natus fugiat odio in? Mollitia
+            molestias error earum.
+            <br>
+            Dolor adipisci quidem consequuntur similique consequuntur doloribus modi possimus sunt voluptas qui
+            Aspernatur natus error quisquam quidem ipsa corrupti! Dignissimos quasi quis natus fugiat odio in? Mollitia
+            molestias error earum.
+            <br>
+            Dolor adipisci quidem consequuntur similique consequuntur doloribus modi possimus sunt voluptas qui
+            Aspernatur natus error quisquam quidem ipsa corrupti! Dignissimos quasi quis natus fugiat odio in? Mollitia
+            molestias error earum.
+          </p>
+        </div>
+        <div class="weui-half-screen-dialog__ft weui-bottom-fixed-opr-page__tool">
+          <div class="weui-half-screen-dialog__btn-area">
+            <a href="javascript:" id="agree_button" class="js_close weui-btn weui-btn_primary">同意</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="https://res.wx.qq.com/t/wx_fed/weui.js/res/1.2.18/weui.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script type="text/javascript" src="/static/register.js"></script>
 </body>
+
 </html>
