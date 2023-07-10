@@ -4,9 +4,18 @@ import (
 	"fmt"
 	"natwin/registry"
 	"net/http"
+	"regexp"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	ProductNotFound     = "ProductNotFound"
+	ProductRegistered   = "ProductRegistered"
+	FormMissingRequired = "FormMissingRequired"
+	FormValidationFail  = "FormValidationFail"
 )
 
 var dav *Webdav
@@ -36,7 +45,7 @@ func getProduct(c *gin.Context) {
 	product, flg := p.Get(productID)
 	if !flg {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "product id not exists",
+			"Code": ProductNotFound,
 		})
 		return
 	}
@@ -57,7 +66,8 @@ func getRegisterPage(c *gin.Context) {
 	product, isExists := p.Get(productID)
 	if !isExists {
 		c.HTML(http.StatusNotFound, "fail.html", gin.H{
-			"message": "product not exists",
+			"Code":      ProductNotFound,
+			"ProductID": productID,
 		})
 		return
 	}
@@ -65,29 +75,93 @@ func getRegisterPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.html", product)
 }
 
+var (
+	regChineseName  = regexp.MustCompile(`^[\p{Han}]+$`)
+	regCellphone    = regexp.MustCompile(`^1\d{10}$`)
+	regEmail        = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
+	regPurchaseDate = regexp.MustCompile(`^\d{4}\-\d{2}\-\d{2}$`)
+)
+
 type RegistrationForm struct {
-	ProductID string `form:"product_id" binding:"required"`
-	Forename  string `form:"forename"`
-	Surname   string `form:"surname" binding:"required"`
-	Phone     string `form:"phone" binding:"required"`
+	ProductID    string `form:"product_id" binding:"required"`
+	Forename     string `form:"forename"`
+	Surname      string `form:"surname" binding:"required"`
+	Title        string `form:"title" binding:"required"`
+	Phone        string `form:"phone" binding:"required"`
+	Email        string `form:"email" binding:"required"`
+	PurchaseDate string `form:"purchase_date" binding:"required"`
+	PurchaseFrom string `form:"buy_from" binding:"required"`
+}
+
+func (f *RegistrationForm) Validate() error {
+	if !regChineseName.MatchString(f.Surname) {
+		return fmt.Errorf("incorrect chinese surname: %s", f.Surname)
+	}
+
+	if f.Forename != "" && !regChineseName.MatchString(f.Forename) {
+		return fmt.Errorf("incorrect chinese forename: %s", f.Forename)
+	}
+
+	if f.Title != "Mr" && f.Title != "Ms" {
+		return fmt.Errorf("incorrect title: %s", f.Title)
+	}
+
+	if !regCellphone.MatchString(f.Phone) {
+		return fmt.Errorf("incorrect phone number: %s", f.Phone)
+	}
+
+	if !regEmail.MatchString(f.Email) {
+		return fmt.Errorf("incorrect email: %s", f.Email)
+	}
+
+	if !regPurchaseDate.MatchString(f.PurchaseDate) {
+		return fmt.Errorf("incorrect purchase date: %s", f.PurchaseDate)
+	}
+
+	return nil
 }
 
 func (f RegistrationForm) ToRegistration() registry.Registration {
 	return registry.Registration{
-		ProductID: f.ProductID,
-		Forename:  f.Forename,
-		Surname:   f.Surname,
-		Phone:     f.Phone,
+		ProductID:    f.ProductID,
+		Forename:     f.Forename,
+		Surname:      f.Surname,
+		Title:        f.Title,
+		Phone:        f.Phone,
+		Email:        f.Email,
+		PurchaseDate: f.PurchaseDate,
+		PurchaseFrom: f.PurchaseFrom,
+		RegisterTime: time.Now(),
 	}
 }
 
 func registerProduct(c *gin.Context) {
 	var form RegistrationForm
 	if err := c.ShouldBind(&form); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+			"ip": c.ClientIP(),
+			"ua": c.GetHeader("User-Agent"),
+		}).Warn("incorrect form submitted.")
+		
 		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
-			"message": err.Error(),
+			"Code": FormMissingRequired,
+			"ProductID": "Unknown",
 		})
 		return
+	}
+
+	if err := form.Validate(); err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+			"ip": c.ClientIP(),
+			"ua": c.GetHeader("User-Agent"),
+		}).Warn("incorrect form submitted.")
+		
+		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
+			"Code": FormValidationFail,
+			"ProductID": form.ProductID,
+		})
 	}
 
 	webdav := getWebdav()
@@ -100,7 +174,8 @@ func registerProduct(c *gin.Context) {
 
 	if _, flg := p.Get(form.ProductID); !flg {
 		c.HTML(http.StatusNotFound, "fail.html", gin.H{
-			"message": "incorrect product id",
+			"Code":      ProductNotFound,
+			"ProductID": form.ProductID,
 		})
 		return
 	}
@@ -113,7 +188,8 @@ func registerProduct(c *gin.Context) {
 
 	if err := r.Register(form.ProductID); err != nil {
 		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
-			"message": err.Error(),
+			"Code":      ProductRegistered,
+			"ProductID": form.ProductID,
 		})
 		return
 	}
@@ -125,8 +201,9 @@ func registerProduct(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "success.html", gin.H{
-		"productId": form.ProductID,
-		"username":  fmt.Sprintf("%s%s", form.Surname, form.Forename),
+		"ProductID":   form.ProductID,
+		"UserSurname": form.Surname,
+		"UserTitle":   form.Title,
 	})
 }
 

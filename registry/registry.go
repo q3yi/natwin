@@ -11,19 +11,19 @@ import (
 )
 
 type Registration struct {
-	ProductID     string
-	Forename      string
-	Surname       string
-	Gender        string
-	Phone         string
-	Email         string
-	Region        string
-	PurchaseTime  string
-	ReceiptNumber string
-	ProductIDPic  string
-	ReceiptPic    string
-	ProductPic    string
-	RegisterTime  time.Time
+	ProductID    string
+	Forename     string
+	Surname      string
+	Title        string
+	Phone        string
+	Email        string
+	Region       string
+	PurchaseDate string
+	PurchaseFrom string
+	ProductIDPic string
+	ReceiptPic   string
+	ProductPic   string
+	RegisterTime time.Time
 }
 
 type DB struct {
@@ -92,7 +92,13 @@ func (r *DB) WriteToXLSX(u Registration, xlsx string) error {
 
 	f.SetCellStr(sheet1, "A2", u.ProductID)
 	f.SetCellStr(sheet1, "B2", u.Surname)
-	f.SetCellStr(sheet1, "C2", u.Phone)
+	f.SetCellStr(sheet1, "C2", u.Forename)
+	f.SetCellStr(sheet1, "D2", u.Title)
+	f.SetCellStr(sheet1, "E2", u.Phone)
+	f.SetCellStr(sheet1, "F2", u.Email)
+	f.SetCellStr(sheet1, "G2", u.PurchaseDate)
+	f.SetCellStr(sheet1, "H2", u.PurchaseFrom)
+	f.SetCellStr(sheet1, "I2", u.RegisterTime.Format(time.DateTime))
 
 	if err := f.Save(); err != nil {
 		return err

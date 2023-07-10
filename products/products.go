@@ -9,11 +9,17 @@ import (
 )
 
 type Product struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Type  string `json:"type"`
+	Model string `json:"model"`
 }
 
 func newProductFromXLSXRow(cols []string) (Product, error) {
-	return Product{ID: cols[0]}, nil
+	return Product{
+		ID:    cols[0],
+		Type:  cols[1],
+		Model: cols[2],
+	}, nil
 }
 
 type DB struct {
