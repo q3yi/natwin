@@ -24,13 +24,13 @@
             <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
               <div class="weui-cell__hd"><span class="weui-label">类型</span></div>
               <div class="weui-cell__bd">
-                <span class="weui-input" readonly>{{ .Type }}</span>
+                <input id="product_type" class="weui-input" value="{{ .Type }}" readonly/>
               </div>
             </label>
-            <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
+            <label for="product_model" class="weui-cell weui-cell_active weui-cell_disabled">
               <div class="weui-cell__hd"><span class="weui-label">型号</span></div>
               <div class="weui-cell__bd">
-                <span class="weui-input" readonly>{{ .Model }}</span>
+                <input id="product_model" class="weui-input" value="{{ .Model }}" readonly />
               </div>
             </label>
           </div>
@@ -86,7 +86,7 @@
             <div class="weui-cell weui-cell_active weui-cell_select" role="button" aria-haspopup="listbox"
               id="purchase_date_picker">
               <div class="weui-cell__hd">
-                <label class="weui-select">购买日期</label>
+                <div class="weui-select">购买日期</div>
               </div>
               <div class="weui-cell__bd">
                 <input id="purchase_date" name="purchase_date" type="hidden" value="" />
