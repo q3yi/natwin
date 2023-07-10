@@ -67,10 +67,7 @@ function InitAgreementComponent() {
 	}
 
 	$('.js_dialog_wrap').on('touchmove', function (e) {
-		if ($.contains(document.getElementById('js_wrap_content'), e.target)) {
-			console.log("test0");
-		} else {
-			console.log("test");
+		if (!$.contains(document.getElementById('js_wrap_content'), e.target)) {
 			e.preventDefault();
 		}
 	});
