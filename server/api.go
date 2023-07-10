@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"math/rand"
 	"natwin/registry"
 	"net/http"
 	"regexp"
@@ -51,6 +52,26 @@ func getProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, product)
+}
+
+func validateProduct(c *gin.Context) {
+	productID := c.Param("productID")
+	p, err := getWebdav().Products()
+	if err != nil {
+		logrus.WithField("productID", productID).Errorf("fail to get product info: %v", err)
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		return
+	}
+
+	product, isExists := p.Get(productID)
+	if !isExists {
+		c.HTML(http.StatusOK, "validate_fail.html", gin.H{
+			"ProductID": productID,
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "validate_success.html", product)
 }
 
 func getRegisterPage(c *gin.Context) {
@@ -140,12 +161,12 @@ func registerProduct(c *gin.Context) {
 	if err := c.ShouldBind(&form); err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
-			"ip": c.ClientIP(),
-			"ua": c.GetHeader("User-Agent"),
+			"ip":    c.ClientIP(),
+			"ua":    c.GetHeader("User-Agent"),
 		}).Warn("incorrect form submitted.")
-		
+
 		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
-			"Code": FormMissingRequired,
+			"Code":      FormMissingRequired,
 			"ProductID": "Unknown",
 		})
 		return
@@ -154,12 +175,12 @@ func registerProduct(c *gin.Context) {
 	if err := form.Validate(); err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
-			"ip": c.ClientIP(),
-			"ua": c.GetHeader("User-Agent"),
+			"ip":    c.ClientIP(),
+			"ua":    c.GetHeader("User-Agent"),
 		}).Warn("incorrect form submitted.")
-		
+
 		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
-			"Code": FormValidationFail,
+			"Code":      FormValidationFail,
 			"ProductID": form.ProductID,
 		})
 	}
@@ -207,7 +228,59 @@ func registerProduct(c *gin.Context) {
 	})
 }
 
+type GenratorQuery struct {
+	Type  string `form:"type"`
+	Model string `form:"model"`
+	Num   int    `form:"number"`
+}
+
+type GenratedProduct struct {
+	ID            string
+	Type          string
+	Model         string
+	ValidationURL string
+	RegisterURL   string
+}
+
+func getGeneratorPage(c *gin.Context) {
+	products := make([]GenratedProduct, 0, 0)
+	c.HTML(http.StatusOK, "product_generator.html", products)
+}
+
+func generateProducts(c *gin.Context) {
+	var query GenratorQuery
+	if c.ShouldBind(&query) != nil {
+		c.String(http.StatusPreconditionFailed, "incorrect url query. please refer the doc.")
+		return
+	}
+
+	if query.Num <= 0 {
+		query.Num = 100
+	}
+
+	if query.Num > 1000 {
+		query.Num = 1000
+	}
+
+	now := time.Now()
+	rand.Seed(now.UnixNano())
+	host := c.Request.Host
+	products := make([]GenratedProduct, query.Num, query.Num)
+	for i := 0; i < query.Num; i++ {
+		id := fmt.Sprintf("%s%05d", now.Format("0601150402"), rand.Intn(10000))
+		products[i].ID = id
+		products[i].Type = query.Type
+		products[i].Model = query.Model
+		products[i].ValidationURL = fmt.Sprintf("%s/validation/%s", host, id)
+		products[i].RegisterURL = fmt.Sprintf("%s/registry/%s", host, id)
+	}
+	c.HTML(http.StatusOK, "product_generator.html", products)
+}
+
 func AddRouter(router gin.IRouter) {
+	router.GET("/generator", getGeneratorPage)
+	router.POST("/generator", generateProducts)
+	router.GET("/validation/:productID", validateProduct)
 	router.GET("/products/:productID", getProduct)
 	router.GET("/registry/:productID", getRegisterPage)
 	router.POST("/registry", registerProduct)

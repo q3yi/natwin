@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+{{ template "header.html" }}
+
+<body>
+  <div class="weui-msg">
+    <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+    <div class="weui-msg__text-area">
+      <h2 class="weui-msg__title">验证成功</h2>
+      <p class="weui-msg__desc">
+        感谢你购买 NATWIN 产品， 请点击下面按钮进行注册。
+      </p>
+      <div class="weui-msg__custom-area">
+        <ul class="weui-form-preview__list">
+          <li role="option" class="weui-form-preview__item">
+            <label class="weui-form-preview__label">产品序列号</label>
+            <p class="weui-form-preview__value">{{ .ID }}</p>
+          </li>
+          <li role="option" class="weui-form-preview__item">
+            <label class="weui-form-preview__label">产品类型</label>
+            <p class="weui-form-preview__value">{{ .Type }}</p>
+          </li>
+          <li role="option" class="weui-form-preview__item">
+            <label class="weui-form-preview__label">产品型号</label>
+            <p class="weui-form-preview__value">{{ .Model }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="weui-msg__opr-area">
+        <p class="weui-btn-area">
+          <a href="/registry/{{ .ID }}" role="button" class="weui-btn weui-btn_default">注册产品</a>
+        </p>
+      </div>
+    <div class="weui-msg__extra-area">
+      {{ template "footer.html" }}
+    </div>
+  </div>
+</body>
+
+</html>
