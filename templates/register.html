@@ -24,19 +24,26 @@
             <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
               <div class="weui-cell__hd"><span class="weui-label">类型</span></div>
               <div class="weui-cell__bd">
-                <input id="product_type" name="product_type" class="weui-input" placeholder="" value="车架" disabled />
+                <input id="product_type" class="weui-input" placeholder="" value="车架" disabled />
+              </div>
+            </label>
+            <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
+              <div class="weui-cell__hd"><span class="weui-label">型号</span></div>
+              <div class="weui-cell__bd">
+                <input id="product_serials" class="weui-input" placeholder="" value="Type 1" disabled />
               </div>
             </label>
           </div>
         </div>
 
         <div class="weui-cells__group weui-cells__group_form">
-          <div class="weui-cells__title">用户信息</div>
+          <div class="weui-cells__title">用户信息
+          </div>
           <div class="weui-cells">
             <label for="surname" class="weui-cell weui-cell_active">
               <div class="weui-cell__hd"><span class="weui-label">姓</span></div>
               <div class="weui-cell__bd">
-                <input id="surname" name="surname" class="weui-input" placeholder="姓氏" requried/>
+                <input id="surname" name="surname" class="weui-input" placeholder="姓氏" requried />
               </div>
             </label>
             <label for="forename" class="weui-cell weui-cell_active">
@@ -60,8 +67,8 @@
               <div class="weui-cell__hd"><label for="phone" class="weui-label">手机号</label></div>
               <div class="weui-cell__bd">
                 <span class="weui-cell__control">+86</span>
-                <input id="phone" name="phone" class="weui-input weui-cell__control weui-cell__control_flex" type="number"
-                  pattern="[0-9]*" placeholder="请输入手机号" value="" />
+                <input id="phone" name="phone" class="weui-input weui-cell__control weui-cell__control_flex"
+                  type="number" pattern="[0-9]*" placeholder="请输入手机号" value="" />
               </div>
             </label>
             <label for="email" class="weui-cell weui-cell_active">
@@ -92,8 +99,8 @@
                 <div class="weui-select">购买渠道</div>
               </div>
               <div class="weui-cell__bd">
-                <input id="buy_from" name="buy_from" type="hidden" value="" />
-                <span id="buy_from_view" class="weui-select"></span>
+                <input id="buy_from" name="buy_from" type="hidden" value="0" />
+                <span id="buy_from_view" class="weui-select">实体店铺</span>
               </div>
             </div>
           </div>
@@ -108,7 +115,7 @@
           </label>
         </div>
         <div class="weui-form__opr-area">
-          <input  type="submit" id="submit_action" style="display:none"/>
+          <input type="submit" id="submit_action" style="display:none" />
           <button class="weui-btn weui-btn_primary" id="submit_button">注册</button>
         </div>
       </div>
@@ -121,7 +128,8 @@
     <div id="agreement_dialog_wrap" class="js_dialog_wrap" ref="showDialog2" aria-labelledby="js_title2" role="dialog"
       aria-modal="false" aria-hidden="true" style="display: none;">
       <div id="mask2" class="js_close weui-mask"></div>
-      <div id="argeement_dialog" class="js_dialog weui-half-screen-dialog weui-half-screen-dialog_large weui-bottom-fixed-opr-page">
+      <div id="argeement_dialog"
+        class="js_dialog weui-half-screen-dialog weui-half-screen-dialog_large weui-bottom-fixed-opr-page">
         <div class="weui-half-screen-dialog__hd">
           <div class="weui-half-screen-dialog__hd__side">
             <button class="js_close weui-btn_icon weui-wa-hotarea">关闭<i class="weui-icon-slide-down"></i></button>

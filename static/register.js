@@ -97,9 +97,60 @@ function InitAgreementComponent() {
 
 }
 
-function InitSubmitButton() {
-	$('#submit_button').on('click', function(e) {
+function InitSubmit() {
+	function checkSurname() {
+		const surname = $("#surname").val().trim();
+		const isValid = /^[\u4e00-\u9fa5]{1,4}$/.test(surname);
+		if (!isValid) {
+			return "请输入中文姓氏，且不能超过 4 个字符。"
+		}
+		$("#surname").val(surname);
+		return null
+	}
+
+	function checkForename() {
+		const forename = $("#forename").val().trim();
+		const isValid = /^[\u4e00-\u9fa5]{0,4}$/.test(forename);
+		if (!isValid) {
+			return "请输入中文名字，且不能超过 4 个字符。"
+		}
+		$("#forename").val(forename);
+		return null
+	}
+
+	function checkPhone() {
+		const phone = $("#phone").val().trim();
+		const isValid = /^1\d{10}$/.test(phone);
+		if (!isValid) {
+			return "请输入正确的 11 位手机号。"
+		}
+		$("#phone").val(phone);
+		return null;
+	}
+
+	function checkEmail() {
+		const email = $("#email").val().trim();
+		const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+		if (!isValid) {
+			return "请输入正确的邮箱。"
+		}
+		$("#email").val(email);
+		return null;
+	}
+
+	const validators = [checkSurname, checkForename, checkPhone, checkEmail];
+
+	$('#submit_button').on('click', function (e) {
 		e.preventDefault();
+
+		for (const f of validators) {
+			const result = f();
+			if (result != null) {
+				weui.topTips(result);
+				return;
+			}
+		}
+
 		if (!$("#agreement_checkbox").is(":checked")) {
 			weui.alert("请阅读并同意服务条款");
 			return;
@@ -111,4 +162,4 @@ function InitSubmitButton() {
 InitPurchaseDateComponent();
 InitBuyFromComponent();
 InitAgreementComponent();
-InitSubmitButton();
+InitSubmit();
