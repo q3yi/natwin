@@ -9,17 +9,16 @@
       <h2 class="weui-msg__title">注册成功</h2>
       <p class="weui-msg__desc">
         恭喜你成功注册 NATWIN 产品。
-        <a class="weui-wa-hotarea weui-link" href="javascript:">文字链接</a>
       </p>
       <div class="weui-msg__custom-area">
         <ul class="weui-form-preview__list">
           <li role="option" class="weui-form-preview__item">
             <label class="weui-form-preview__label">产品序列号</label>
-            <p class="weui-form-preview__value">{{ .productId }}</p>
+            <p class="weui-form-preview__value">{{ .ProductID }}</p>
           </li>
           <li role="option" class="weui-form-preview__item">
             <label class="weui-form-preview__label">注册人</label>
-            <p class="weui-form-preview__value"></p>{{ .username }}
+            <p class="weui-form-preview__value">{{.UserSurname}}{{if eq .UserTitle "Mr"}}先生{{else}}女士{{end}}</p>
           </li>
         </ul>
       </div>

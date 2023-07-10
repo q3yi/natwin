@@ -8,17 +8,28 @@
     <div class="weui-msg__text-area">
       <h2 class="weui-msg__title">注册失败</h2>
       <p class="weui-msg__desc">
-        {{ .message }}
-        <a class="weui-wa-hotarea weui-link" href="javascript:">文字链接</a>
+        {{if eq .Code "ProductNotFound"}}
+        产品序列号不存在，请直接扫描二维码注册，无需手动输入或更改产品序列号。
+        {{else if eq .Code "ProductRegistered"}}
+        产品已经注册，请勿重复注册。
+        {{else if eq .Code "FormMissingRequired"}}
+        提交的注册信息不完整，无法完成注册，请扫码使用正确的网页注册。
+        {{else if eq .Code "FormValidationFail"}}
+        提交的注册信息有误，无法完成注册，请扫码使用正确的网页注册。
+        {{else}}
+        未知错误，请联系客服。
+        {{end}}
       </p>
+      {{if not (eq .ProductID "") }}
       <div class="weui-msg__custom-area">
         <ul class="weui-form-preview__list">
           <li role="option" class="weui-form-preview__item">
             <label class="weui-form-preview__label">产品序列号</label>
-            <p class="weui-form-preview__value">{{ .productId }}</p>
+            <p class="weui-form-preview__value">{{ .ProductID }}</p>
           </li>
         </ul>
       </div>
+      {{end}}
     </div>
     <div class="weui-msg__opr-area">
       <p class="weui-btn-area">

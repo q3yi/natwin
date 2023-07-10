@@ -24,13 +24,13 @@
             <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
               <div class="weui-cell__hd"><span class="weui-label">类型</span></div>
               <div class="weui-cell__bd">
-                <input id="product_type" class="weui-input" placeholder="" value="车架" disabled />
+                <span class="weui-input" readonly>{{ .Type }}</span>
               </div>
             </label>
             <label for="product_type" class="weui-cell weui-cell_active weui-cell_disabled">
               <div class="weui-cell__hd"><span class="weui-label">型号</span></div>
               <div class="weui-cell__bd">
-                <input id="product_serials" class="weui-input" placeholder="" value="Type 1" disabled />
+                <span class="weui-input" readonly>{{ .Model }}</span>
               </div>
             </label>
           </div>
@@ -52,14 +52,14 @@
                 <input id="forename" name="forname" class="weui-input" placeholder="名字（可选）" value="" />
               </div>
             </label>
-            <label for="gender" class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after">
+            <label for="title" class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after">
               <div class="weui-cell__hd">
                 <span class="weui-label">称呼</span>
               </div>
               <div class="weui-cell__bd">
-                <select class="weui-select" name="gender" id="gender" value="male">
-                  <option value="male">先生</option>
-                  <option value="female">女士</option>
+                <select class="weui-select" name="title" id="title" value="Mr">
+                  <option value="Mr">先生</option>
+                  <option value="Ms">女士</option>
                 </select>
               </div>
             </label>
@@ -178,7 +178,7 @@
     </div>
   </div>
   <script type="text/javascript" src="https://res.wx.qq.com/t/wx_fed/weui.js/res/1.2.18/weui.min.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script type="text/javascript" src="/static/jquery-3.7.0.min.js"></script>
   <script type="text/javascript" src="/static/register.js"></script>
 </body>
 
