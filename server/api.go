@@ -86,7 +86,7 @@ func getRegisterPage(c *gin.Context) {
 
 	product, isExists := p.Get(productID)
 	if !isExists {
-		c.HTML(http.StatusNotFound, "fail.html", gin.H{
+		c.HTML(http.StatusNotFound, "register_fail.html", gin.H{
 			"Code":      ProductNotFound,
 			"ProductID": productID,
 		})
@@ -165,7 +165,7 @@ func registerProduct(c *gin.Context) {
 			"ua":    c.GetHeader("User-Agent"),
 		}).Warn("incorrect form submitted.")
 
-		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
+		c.HTML(http.StatusPreconditionFailed, "register_fail.html", gin.H{
 			"Code":      FormMissingRequired,
 			"ProductID": "Unknown",
 		})
@@ -179,7 +179,7 @@ func registerProduct(c *gin.Context) {
 			"ua":    c.GetHeader("User-Agent"),
 		}).Warn("incorrect form submitted.")
 
-		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
+		c.HTML(http.StatusPreconditionFailed, "register_fail.html", gin.H{
 			"Code":      FormValidationFail,
 			"ProductID": form.ProductID,
 		})
@@ -189,12 +189,12 @@ func registerProduct(c *gin.Context) {
 
 	p, err := webdav.Products()
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
 
 	if _, flg := p.Get(form.ProductID); !flg {
-		c.HTML(http.StatusNotFound, "fail.html", gin.H{
+		c.HTML(http.StatusNotFound, "register_fail.html", gin.H{
 			"Code":      ProductNotFound,
 			"ProductID": form.ProductID,
 		})
@@ -203,12 +203,12 @@ func registerProduct(c *gin.Context) {
 
 	r, err := webdav.Registration()
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
 
 	if err := r.Register(form.ProductID); err != nil {
-		c.HTML(http.StatusPreconditionFailed, "fail.html", gin.H{
+		c.HTML(http.StatusPreconditionFailed, "register_fail.html", gin.H{
 			"Code":      ProductRegistered,
 			"ProductID": form.ProductID,
 		})
@@ -217,11 +217,11 @@ func registerProduct(c *gin.Context) {
 
 	if err := webdav.WriteRegistration(form.ToRegistration()); err != nil {
 		logrus.Errorf("fail to write registration: %s", err)
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
 
-	c.HTML(http.StatusOK, "success.html", gin.H{
+	c.HTML(http.StatusOK, "register_success.html", gin.H{
 		"ProductID":   form.ProductID,
 		"UserSurname": form.Surname,
 		"UserTitle":   form.Title,
