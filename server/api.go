@@ -59,7 +59,7 @@ func validateProduct(c *gin.Context) {
 	p, err := getWebdav().Products()
 	if err != nil {
 		logrus.WithField("productID", productID).Errorf("fail to get product info: %v", err)
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
 
@@ -80,7 +80,7 @@ func getRegisterPage(c *gin.Context) {
 	p, err := getWebdav().Products()
 	if err != nil {
 		logrus.WithField("productID", productID).Errorf("fail to get product info: %v", err)
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{})
+		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
 

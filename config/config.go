@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 )
@@ -15,6 +16,7 @@ var (
 	RegistryFile string
 	ProductsFile string
 	Listen       string
+	LogLevel     int
 )
 
 func init() {
@@ -30,4 +32,10 @@ func init() {
 	if Listen == "" {
 		logrus.Fatal("config env not found.")
 	}
+
+	lvl, err := strconv.Atoi(os.Getenv("NATWIN_LogLevel"))
+	if err != nil {
+		logrus.Fatalf("fail to parse log level: %s", err)
+	}
+	LogLevel = lvl
 }
