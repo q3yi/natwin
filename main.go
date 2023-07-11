@@ -35,6 +35,10 @@ func main() {
 		c.String(http.StatusOK, fmt.Sprint(time.Now().Unix()))
 	})
 
+	router.NoRoute(func(c *gin.Context) {
+		c.String(http.StatusNotFound, "not found")
+	})
+
 	srv := &http.Server{
 		Addr:    config.Listen,
 		Handler: router,

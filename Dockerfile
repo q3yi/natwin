@@ -11,7 +11,7 @@ COPY . ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o natwin .
 
-FROM gcr.io/distroless/base-debian11
+FROM alpine:latest
 
 WORKDIR /
 
@@ -20,5 +20,6 @@ COPY static/ static/
 COPY templates/ templates/
 
 EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["/natwin"]

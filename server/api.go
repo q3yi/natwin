@@ -143,6 +143,7 @@ func (f *RegistrationForm) Validate() error {
 }
 
 func (f RegistrationForm) ToRegistration() registry.Registration {
+	loc := time.FixedZone("UTC+8", int((8 * time.Hour).Seconds()))
 	return registry.Registration{
 		ProductID:    f.ProductID,
 		Forename:     f.Forename,
@@ -152,7 +153,7 @@ func (f RegistrationForm) ToRegistration() registry.Registration {
 		Email:        f.Email,
 		PurchaseDate: f.PurchaseDate,
 		PurchaseFrom: f.PurchaseFrom,
-		RegisterTime: time.Now(),
+		RegisterTime: time.Now().In(loc),
 	}
 }
 
@@ -203,6 +204,7 @@ func registerProduct(c *gin.Context) {
 
 	r, err := webdav.Registration()
 	if err != nil {
+		logrus.WithField("error", err).Warn("fail to get registration.")
 		c.HTML(http.StatusInternalServerError, "server_error.html", gin.H{})
 		return
 	}
@@ -264,6 +266,12 @@ func generateProducts(c *gin.Context) {
 
 	now := time.Now()
 	rand.Seed(now.UnixNano())
+
+	scheme := c.Request.URL.Scheme
+	if scheme == "" {
+		scheme = "http"
+	}
+
 	host := c.Request.Host
 	products := make([]GenratedProduct, query.Num, query.Num)
 	for i := 0; i < query.Num; i++ {
@@ -271,8 +279,8 @@ func generateProducts(c *gin.Context) {
 		products[i].ID = id
 		products[i].Type = query.Type
 		products[i].Model = query.Model
-		products[i].ValidationURL = fmt.Sprintf("%s/validation/%s", host, id)
-		products[i].RegisterURL = fmt.Sprintf("%s/registry/%s", host, id)
+		products[i].ValidationURL = fmt.Sprintf("%s://%s/validation/%s", scheme, host, id)
+		products[i].RegisterURL = fmt.Sprintf("%s://%s/registry/%s", scheme, host, id)
 	}
 	c.HTML(http.StatusOK, "product_generator.html", products)
 }

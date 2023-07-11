@@ -1,8 +1,9 @@
 package products
 
 import (
-	"io"
+	"os"
 	"sync"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/xuri/excelize/v2"
@@ -24,19 +25,31 @@ func newProductFromXLSXRow(cols []string) (Product, error) {
 
 type DB struct {
 	sync.RWMutex
-	m map[string]Product
+	fileModifyTime time.Time
+	m              map[string]Product
 }
 
 func New() *DB {
 	return &DB{m: make(map[string]Product)}
 }
 
-func (c *DB) LoadFromXLSX(xlsx io.Reader) error {
-
-	f, err := excelize.OpenReader(xlsx)
+func (c *DB) LoadFromXLSX(xlsx string) error {
+	stat, err := os.Stat(xlsx)
 	if err != nil {
 		return err
 	}
+
+	if !c.fileModifyTime.Before(stat.ModTime()) {
+		return nil
+	}
+
+	f, err := excelize.OpenFile(xlsx)
+	if err != nil {
+		os.Remove(xlsx)
+		logrus.WithField("error", err).Warnf("fail to open local file: %s", xlsx)
+		return err
+	}
+	defer f.Close()
 
 	sheet := f.GetSheetName(0)
 
@@ -67,6 +80,7 @@ func (c *DB) LoadFromXLSX(xlsx io.Reader) error {
 
 	c.Lock()
 	c.m = m
+	c.fileModifyTime = stat.ModTime()
 	c.Unlock()
 
 	logrus.Infof("load %d products in to database.", len(c.m))
